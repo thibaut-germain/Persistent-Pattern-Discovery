@@ -78,7 +78,7 @@ class Cubic(Motif):
 
 class SignalGenerator(object): 
 
-    def __init__(self,n_motifs:int,motif_length=100,motif_amplitude=1,motif_fundamental =1,motif_type ='Sin',noise_amplitude=0.1,n_novelties=0,length_fluctuation=0.,amplitude_fluctuation=0.,sparsity=0.2,sparsity_fluctuation = 0.,min_rep=2,max_rep=5) -> None:
+    def __init__(self,n_motifs:int,motif_length=100,motif_amplitude=1,motif_fundamental =1,motif_type ='Sin',noise_amplitude=0.1,n_novelties=0,length_fluctuation=0.,amplitude_fluctuation=0.,sparsity=0.2,sparsity_fluctuation = 0.,walk_amplitude = 0.,min_rep=2,max_rep=5) -> None:
         """Signal Generator Initialization
 
         Args:
@@ -93,6 +93,7 @@ class SignalGenerator(object):
             amplitude_fluctuation (float, optional): pattern amplitude fluctuation percentage. Defaults to 0..
             sparsity (float, optional): sparsity between pattern. Defaults to 0.2.
             sparsity_fluctuaion (float,optional): random sparsity fluctuation. Defaluts to 0.0
+            walk_amplitude (float,optional): random walk amplitude. Defaluts to 0.0
             min_rep (int, optional): minimum motif repetition. Defaults to 2.
             max_rep (int, optional): maximum motif repetition. Defaults to 5.
         """
@@ -107,6 +108,7 @@ class SignalGenerator(object):
         self.amplitude_fluctuation = amplitude_fluctuation
         self.sparsity = sparsity
         self.sparsity_fluctuation = sparsity_fluctuation
+        self.walk_amplitude = walk_amplitude
         self.min_rep = min_rep
         self.max_rep = max_rep
 
@@ -193,7 +195,10 @@ class SignalGenerator(object):
 
         #post processing
         sig = np.hstack(sig)
+        #add noise
         sig += np.random.randn(sig.size)*self.noise_amplitude
+        #add randown walk
+        sig += np.cumsum(self.walk_amplitude*np.random.randn(sig.size))
         self.signal_ = sig
         self.labels_ = np.vstack(labels).T
         self.positions_ = positions

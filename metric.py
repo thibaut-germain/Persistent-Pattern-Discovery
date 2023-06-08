@@ -1,6 +1,7 @@
 import numpy as np
 import itertools as it
 import matplotlib.pyplot as plt
+from sklearn.metrics import adjusted_mutual_info_score
 
 from utils import transfrom_label
 
@@ -435,3 +436,32 @@ class EventScore(object):
         axs[1].set_xlabel('Threshold')
         return fig,axs
 
+
+
+####################################################################################################################
+####################################################################################################################
+# Clustering Based
+####################################################################################################################
+####################################################################################################################
+
+
+class AdjustedMutualInfoScore:
+
+    def __init__(self) -> None:
+        pass
+
+    def score(self,R:np.ndarray,P:np.ndarray)->None: 
+        """Compute scoring
+
+        Args:
+            label (np.ndarray): label, shape (N,L)
+            predictions (np.ndarray): prediction, shape (N,L)
+
+        Returns:
+            np.ndarray: score
+        """ 
+        n_R = R.shape[0]
+        R_label = np.sum(R * np.arange(1,n_R+1).reshape(-1,1),axis = 0)
+        n_P = P.shape[0]
+        P_label = np.sum(P * np.arange(1,n_P+1).reshape(-1,1),axis = 0)
+        return adjusted_mutual_info_score(R_label,P_label)

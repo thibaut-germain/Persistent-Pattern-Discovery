@@ -212,8 +212,9 @@ def outlier_otsu(X:np.ndarray,threshold=0.95,nbins=1024)->tuple:
     """
     births = X[:,0]
     b_cut = _basic_otsu(births,nbins)
-    b_cut = _basic_otsu(births[births<b_cut],nbins)
+    #b_cut = _basic_otsu(births[births<b_cut],nbins)
     pers = np.diff(X[X[:,0]<b_cut],axis=1).reshape(-1)
+    pers = pers[pers>0]
     pers.sort()
     idx = np.where(normal_outliers(pers,threshold))[0][0]
     p_cut = (pers[idx-1]+pers[idx])/2
