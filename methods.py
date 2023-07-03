@@ -12,10 +12,11 @@ from post_processing import PostProcessing
 
 class BasePersistentPattern(object): 
 
-    def __init__(self,wlen:int,n_neighbors:int, n_patterns = None, min_wlen = None,alpha =0.01,beta = 0,similar_length = False, similarity = 0.25,n_jobs =1): 
+    def __init__(self,wlen:int,n_neighbors:int, n_patterns = None,distance_name = "LTNormalizedEuclidean" ,min_wlen = None,alpha =0.01,beta = 0,similar_length = False, similarity = 0.25,n_jobs =1): 
         self.wlen = wlen
         self.n_neighbors = n_neighbors
         self.n_patterns = n_patterns
+        self.distance_name = distance_name
         if min_wlen is not None: 
             self.min_wlen = min_wlen
         else: 
@@ -42,7 +43,7 @@ class BasePersistentPattern(object):
     
     
     def _base_persistence(self,signal:np.ndarray)->None: 
-        self.knn_ = KNN(self.n_neighbors,self.wlen,"UnitEuclidean",n_jobs=self.n_jobs)
+        self.knn_ = KNN(self.n_neighbors,self.wlen,self.distance_name,n_jobs=self.n_jobs)
         self.knn_.fit(signal)
         self.base_persistence_ = BasicPersistence()
         self.base_persistence_.fit(self.knn_.filtration_)

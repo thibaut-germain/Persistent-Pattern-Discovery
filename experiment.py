@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import time
 
-from metric import SingleSampleScore,SampleScore,SingleEventScore,EventScore
+from metric import SingleSampleScore,SampleScore,SingleEventScore,EventScore, AdjustedMutualInfoScore
 from synthetic_signal import SignalGenerator
 
 def generate_dataset(config_lst:list,n_signals:int)->tuple:
