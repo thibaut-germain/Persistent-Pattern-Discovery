@@ -1,0 +1,2 @@
+signal_id: 16, algo: MatrixProfile, config_id: 0 failed to fit.
+signal_id: 15, algo: MatrixProfile, config_id: 0 failed to fit.

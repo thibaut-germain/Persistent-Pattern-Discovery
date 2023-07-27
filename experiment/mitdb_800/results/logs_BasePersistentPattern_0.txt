@@ -1,0 +1,2 @@
+signal_id: 2, algo: BasePersistentPattern, config_id: 1 failed to fit.
+signal_id: 2, algo: BasePersistentPattern, config_id: 1 failed to fit.
