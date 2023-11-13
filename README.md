@@ -11,6 +11,10 @@ Motif Discovery consists in finding repeated patterns and locating their occurre
 
 In this paper, we propose a new algorithm that discovers motifs of variable length without requiring a similarity threshold. At its core, the algorithm maps a time series onto a graph, summarizes it with persistent homology - a tool from topological data analysis - and identifies the most relevant motifs from the graph summary. We also present an adaptive version of the algorithm that infers the number of motifs to discover from the graph summary. Empirical evaluation on 9 labeled datasets, including 6 real-world datasets, shows that our method significantly outperforms state-of-the-art algorithms.
 
+<p align="center">
+<img src="illustrative_example.pdf" alt="drawing" width="400"/>
+</p>
+
 
 ## Functionalities
 
