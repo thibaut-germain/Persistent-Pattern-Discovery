@@ -90,12 +90,12 @@ class Experiment:
         label = label[label.sum(axis=1)>0]
 
         #update the number of patterns to predict if required
-        if "n_patterns" in config.keys():
-            if config["n_patterns"] is not None: 
-                t_config = config.copy()
+        t_config = config.copy()
+        if ("n_patterns" in t_config.keys()):
+            if (isinstance(t_config["n_patterns"],int)):
                 t_config["n_patterns"] = label.shape[0]
-        else:
-            t_config = config.copy()
+            else:
+                t_config["n_patterns"] = None
 
         
         try:
@@ -114,6 +114,9 @@ class Experiment:
             tdf["config_idx"] = config_idx
             tdf["execution_time"] = end - start
             tdf["signal_idx"] = signal_idx
+            tdf["n_patterns"] = label.shape[0]
+            tdf["predicted_n_patterns"] = algo.prediction_mask_.shape[0]
+
             if self.verbose: 
                 s1 = np.round(tdf[tdf["metric"] == "es-auc-fscore"].score.values[0],2)
                 s2 = np.round(tdf[tdf["metric"] == "amis"].score.values[0],2)
@@ -175,7 +178,7 @@ class Experiment:
                 )
             counts = min(counts+batch_size,n_signals)
             self.df_= pd.concat((self.df_,*results)).reset_index(drop = True)
-            self.df_ = self.df_.astype({'metric':str, "score":float, "algorithm":str,'config_idx':int,"signal_idx":int})
+            self.df_ = self.df_.astype({'metric':str, "score":float, "algorithm":str,'config_idx':int,"signal_idx":int, "n_patterns":int, "predicted_n_patterns":int})
 
             if backup_path != None: 
                 self.df_.to_csv(backup_path)

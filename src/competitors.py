@@ -181,7 +181,7 @@ class Baseline(object):
 
 class LatentMotif(object): 
     
-    def __init__(self,n_patterns:int,wlen:int,radius:float,alpha = 1.0,learning_rate =0.1,n_iterations = 100, n_strats = 5, verbose = False) -> None:
+    def __init__(self,n_patterns:int,wlen:int,radius:float,alpha = 1.0,learning_rate =0.1,n_iterations = 100, n_starts = 1, verbose = False) -> None:
         """Initialization
 
         Args:
@@ -200,7 +200,7 @@ class LatentMotif(object):
         self.alpha = alpha
         self.learning_rate = learning_rate
         self.n_iterations = n_iterations
-        self.n_starts = n_strats
+        self.n_starts = n_starts
         self.verbose = verbose
 
     def _freq(self, patterns:np.ndarray)->float: #verified
@@ -317,7 +317,10 @@ class LatentMotif(object):
         rate_adapt = np.zeros((self.n_patterns, self.wlen))
 
         for i in range(self.n_iterations): 
-            div = self._freq_derivative(patterns) - self._pen_derivative(patterns)
+            if self.n_patterns>1:
+                div = self._freq_derivative(patterns) - self._pen_derivative(patterns)
+            else: 
+                div = self._freq_derivative(patterns)
             rate_adapt += div**2
             patterns -= self.learning_rate/np.sqrt(rate_adapt) * div
 
@@ -986,7 +989,7 @@ class Valmod(object):
 
 class Grammarviz(object): 
 
-    def __init__(self,n_patterns:int,alphabet_size=4,numerosity="MINDIST",window_size = 30,word_size = 6,folder_java = "/Users/tgermain/Documents/code/GrammarViz/grammarviz2_src",file_exchange_location="target/file_exchange") -> None:
+    def __init__(self,n_patterns:int,alphabet_size=4,numerosity="MINDIST",window_size = 30,word_size = 6,folder_java = "./src/grammarviz",file_exchange_location="target/file_exchange") -> None:
         """_summary_
 
         Args:
@@ -1040,7 +1043,6 @@ class Grammarviz(object):
         
         return self
 
-    
     def _read_grammaviz_result(self)->np.ndarray:
         """Read output txt file to compute the mask
 
@@ -1051,20 +1053,46 @@ class Grammarviz(object):
         with open(self.folder_java/self.output_path_,"r") as f: 
             res = f.read()
 
-        res = res.split("///")[2:]
-        mask = np.zeros((self.n_cluster,self.signal_length))
+        r0 = res.split("///")[1]
+        r0 = r0.split("\n")[1]
+        r0 = r0.split(",")[0]
+        r0 = r0.split("-> ")[1]
+        r0 = r0.replace(" ", ",")
+        r0 = r0[1:-1]
+        r0 = r0.split(",")
+        rlabels, rcounts = np.unique(r0,return_counts=True)
+        ridxs = np.array([i for i,r in enumerate(rlabels) if r[0]=="R"])
+        if len(ridxs)>0:
+            rlabels = rlabels[ridxs]
+            rcounts = rcounts[ridxs]
+            n_rules = ridxs.shape[0]
+            counts = 0
+            idxs = []
 
-        for i,motif in enumerate(res[:self.n_cluster]): 
-            motif = motif.split("\n")
-            starts = motif[2].split(":")[-1][1:]
-            starts = starts.strip('][').split(', ')
-            starts = np.array(starts).astype(int)
-            lengths = motif[3].split(":")[-1][1:]
-            lengths = lengths.strip('][').split(', ')
-            lengths = np.array(lengths).astype(int)
-            overlaps = np.clip(np.hstack(((starts+lengths)[:-1]-starts[1:],0)),0,np.inf).astype(int)
-            for idx,wlen,ovl in zip(starts,lengths,overlaps): 
-                mask[i,idx:idx+wlen-ovl-1] = 1
+            while (counts < min(self.n_cluster,n_rules)): 
+                idx = np.argmax(rcounts)
+                idxs.append(idx)
+                rcounts[idx] = 0
+                counts +=1 
+
+            idxs = [int(r[1:])-1 for r in rlabels[idxs]]
+
+            res = res.split("///")[2:]
+            mask = np.zeros((min(self.n_cluster,n_rules),self.signal_length))
+
+            for i,motif in enumerate(np.array(res)[idxs]): 
+                motif = motif.split("\n")
+                starts = motif[2].split(":")[-1][1:]
+                starts = starts.strip('][').split(', ')
+                starts = np.array(starts).astype(int)
+                lengths = motif[3].split(":")[-1][1:]
+                lengths = lengths.strip('][').split(', ')
+                lengths = np.array(lengths).astype(int)
+                overlaps = np.clip(np.hstack(((starts+lengths)[:-1]-starts[1:],0)),0,np.inf).astype(int)
+                for idx,wlen,ovl in zip(starts,lengths,overlaps): 
+                    mask[i,idx:idx+wlen-ovl-1] = 1
+        else: 
+            mask = np.zeros((self.n_cluster,self.signal_length))
         
         return mask
     

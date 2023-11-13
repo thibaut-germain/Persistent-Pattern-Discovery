@@ -1,9 +1,9 @@
 import numpy as np
 import itertools as it
 from sklearn.metrics import adjusted_mutual_info_score
+from scipy.optimize import linear_sum_assignment
 
 from utils import transfrom_label
-
 ####################################################################################################################
 ####################################################################################################################
 # Sample Based
@@ -88,21 +88,7 @@ class SampleScore:
             for j, p in enumerate(P): 
                 overlaps[i,j] = np.sum(r*p)
 
-        if N<=M: 
-            cbs = list(it.permutations(range(M),N))
-            perm_score = np.zeros(len(cbs))
-            for i,cb in enumerate(cbs): 
-                for j,idx in enumerate(cb): 
-                    perm_score[i] += overlaps[j,idx]
-            self.best_cb_ = np.vstack((np.arange(N),np.array(cbs[np.argmax(perm_score)]))).T
-        else: 
-            cbs = list(it.permutations(range(N),M))
-            perm_score = np.zeros(len(cbs))
-            for i,cb in enumerate(cbs): 
-                for j,idx in enumerate(cb): 
-                    perm_score[i] += overlaps[idx,j]
-            self.best_cb_ = np.vstack((np.array(cbs[np.argmax(perm_score)]),np.arange(M))).T
-
+        self.best_cb_ = np.vstack((linear_sum_assignment(overlaps,True))).T
 
         #compute score intervals for best permutation
         precision = 0
@@ -130,7 +116,6 @@ def event_assignement(R_lst:list,P_lst:list)->np.ndarray:
     Args:
         R_lst (list): Real label start end list
         P_lst (list): Predicted label start end list
-        threshold (float, optional): _description_. Defaults to 0.9.
 
     Returns:
         np.ndarray : pairing
@@ -146,15 +131,8 @@ def event_assignement(R_lst:list,P_lst:list)->np.ndarray:
             if e>=s: 
                 arr[i,j] = e-s+1
                 
-    count = min(n_r,n_p)
-    pairing = []
-    while count>0: 
-        i,j = np.unravel_index(np.argmax(arr),(n_r,n_p))
-        pairing.append([i,j])
-        arr[i,:] = -np.inf
-        arr[:,j] = -np.inf
-        count -=1
-    return np.array(pairing)
+    pairing = np.vstack((linear_sum_assignment(arr,True))).T
+    return pairing
 
 def b_e_precision_(R_lst:list,P_lst:list,threshold=0.9)->float: 
     """Event based precision
@@ -288,20 +266,7 @@ class EventScore(object):
             for j, p in enumerate(P): 
                 overlaps[i,j] = np.sum(r*p)
 
-        if N<=M: 
-            cbs = list(it.permutations(range(M),N))
-            perm_score = np.zeros(len(cbs))
-            for i,cb in enumerate(cbs): 
-                for j,idx in enumerate(cb): 
-                    perm_score[i] += overlaps[j,idx]
-            self.best_cb_ = np.vstack((np.arange(N),np.array(cbs[np.argmax(perm_score)]))).T
-        else: 
-            cbs = list(it.permutations(range(N),M))
-            perm_score = np.zeros(len(cbs))
-            for i,cb in enumerate(cbs): 
-                for j,idx in enumerate(cb): 
-                    perm_score[i] += overlaps[idx,j]
-            self.best_cb_ = np.vstack((np.array(cbs[np.argmax(perm_score)]),np.arange(M))).T
+        self.best_cb_ = np.vstack((linear_sum_assignment(overlaps,True))).T
 
 
     def score(self,R:np.ndarray,P:np.ndarray,threshold=0.1)->tuple:

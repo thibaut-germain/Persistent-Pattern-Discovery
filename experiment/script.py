@@ -1,6 +1,3 @@
-import numpy as np
-import json
-#from sklearn.model_selection import ParameterGrid
 import subprocess
 
 import sys
@@ -15,10 +12,10 @@ EXP_ID = 0
 algorithms = [
     "BasePersistentPattern",
     "MatrixProfile",
-    #"Valmod",
-    #"Baseline",
-    #"LatentMotif",
-    #"Grammarviz",
+    "Valmod",
+    "Baseline",
+    "LatentMotif",
+    "Grammarviz",
 ]
 
 if __name__ == "__main__": 

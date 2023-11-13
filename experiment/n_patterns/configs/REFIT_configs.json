@@ -1,0 +1,1 @@
+{"BasePersistentPattern": "[{\"wlen\": 80, \"n_neighbors\": 5, \"n_jobs\": 6, \"beta\": 0, \"alpha\": 10, \"jump\": 1}, {\"wlen\": 80, \"n_neighbors\": 5, \"n_jobs\": 6, \"beta\": 0, \"alpha\": 10, \"jump\": 2}, {\"wlen\": 80, \"n_neighbors\": 5, \"n_jobs\": 6, \"beta\": 0, \"alpha\": 10, \"jump\": 3}]"}
