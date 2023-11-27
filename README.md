@@ -6,8 +6,6 @@
 </p>
 </div>
 
-https://github.com/thibaut-germain/Persistent-Pattern-Discovery
-
 ## Abstract
 Motif Discovery consists in finding repeated patterns and locating their occurrences within time series without prior knowledge of their shape or location. Most state-of-the-art algorithms rely on three core parameters: the number of motifs to discover, the length of the motifs, and a similarity threshold between motif occurrences. In practice, these parameters are difficult to determine and are usually set by trial-and-error.
 
