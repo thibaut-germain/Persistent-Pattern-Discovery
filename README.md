@@ -2,7 +2,7 @@
 
 <div align="center">
 <p>
-<img alt="GitHub" src="https://img.shields.io/github/license/thibaut-germain/Persistent-Pattern-Discovery"> <img alt="GitHub issues" src="https://img.shields.io/github/issues/thibaut-germain/Persistent-Pattern-Discovery">
+<img alt="GitHub issues" src="https://img.shields.io/github/issues/thibaut-germain/Persistent-Pattern-Discovery">
 </p>
 </div>
 
